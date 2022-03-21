@@ -35,7 +35,7 @@ Despite of this bad first approach, you decide to go ahead and give it a chance,
 After pressing the <prove> button, the first counterexample (CEX) appears. By opening the wave to do root-cause analysis the first thing you see is this:
 
 +----------------------------------------------------------------------+
-| .. image:: img/encrypt.png                                           |
+| .. image:: ../img/encrypt.png                                        |
 |    :width: 6.5in                                                     |
 |    :height: 2.93in                                                   |
 |    :align: center                                                    |
