@@ -2,9 +2,9 @@
 YosysHQ SVA AXI Verification IP
 ===============================================
 
---------
+========
 Abstract
---------
+========
 Due the popularity of AMBA protocols, AXI4 specifically, and trying to help our community to develop high quality designs with formal methods as easy as possible, we decided to create a Formal VIP for this protocol (yes, once again, but this time we tried to do it right). So in this AppNote we show you the results.
 
 This AppNote will cover the following topics:
@@ -13,9 +13,9 @@ This AppNote will cover the following topics:
     * An usage example in an interconnect design.
 
 
-------------
+============
 Introduction
-------------
+============
 Everyone in the industry has ever heard about Verification IP (VIP), how these magical things can save
 hours of development, testing and integration. Somehow, CAD vendors sweeten the ears of all of us who, at
 some point, needed to verify some complex component. They say, is just as easy to connect it and tada!, all the
@@ -49,12 +49,13 @@ signals because they are **encrypted**. Sometimes there is a message accompanyin
 
 But, to be fair, not everything is CAD companies fault. Developing a VIP is complicated. The engineers who write these VIPs needs to understand with great detail the specification, and cross words (emails) to the specification architects to clarify one thing or another. Speaking for example of the AMBA AXI and ACE Protocol Specification [missing link], almost everything is explained there, some things more detailed, some others miss  important information, or the second piece of info is indexed in any other part of the document or even worse, in another specification (try to read Atomic Accesses related sections knowing that any missing link is hidden in the Exclusive Monitor instructions (LDXR/STXR) programmers guide, because is ARM, and they share the same principles for most of their products).
 
-----------------------------
+============================
 AXI4 Formal VIP Architecture
-----------------------------
+============================
 
+--------
 Features
------------------------------------------
+--------
 For more information regarding modes, properties descriptions and methodologies please check the *UG_verification_plan.pdf* file in the repository.
 
 .. warning::
@@ -86,8 +87,9 @@ The features and limitations of the new AXI4 SVA FVIP are the following ones:
 .. note::
     Full AXI4 implementation is possible. In fact, at the moment of writing this AppNote, we have the capacity to test more than one transaction at a time, out-of-order transactions, full exclusive transaction monitors, data interleave, etc. But for simplicity purposes, and because these features covers most of the cases, we decided to release the IP in this state. The released FVIP has the required logic to add these features easily, that is another advantage of the open source components.
 
+------------
 Architecture
------------------------------------------
+------------
 We designed the AXI4 SVA FVIP having in mind the fundamental architectural descriptions in the AMBA AXI4 IHI0022E spec (A1.3 AXI Architecture):
     * Each channel (W, AW, B, AR, R) is defined on its own module, and each module contains only the properties that are necessary for the AXI4 channel.
         * In this way, each verification engineer can focus on certain channel without the hurdle of loading tons of checks that are not of interest for the test in question.
@@ -158,12 +160,13 @@ Then, in each channel that needs to honor this property, it is assembled as show
 
 The user can drag and drop the signals to the waveform, only the ones stated in the property, and look at the message and/or the package where this property is defined to start debugging. Sometimes, the message in the assertion is that clear, that there might be not need to lookup at the spec, but never trust code, it is recommended to confirm with the relevant reference.
 
----------------------------------------------------
+===================================================
 Formalisation and Optimisation of the AXI4 SVA FVIP
----------------------------------------------------
+===================================================
 
+------------------------------
 When to use BMC or K-induction
----------------------------------------------------
+------------------------------
 All of the properties defined in the IHI0022E spec are invariants, that is, they must hold *invariably* of the design input values and/or initial states. A good rule of thumb is to use *BMC* for the AXI control signals, such as handshakes, strobes, etc, and start with BMC but move incrementally to K-induction for data transport checks, such as properties for *channel relationships* or whenever tracking of "in-flight" data is needed. Although BMC with sufficient radius can be enough to gain confidence.
 
 Bounded Model Checking (BMC) with AXI SVA FVIP
@@ -183,10 +186,12 @@ The real difficulties are to come with an inductive invariant. Remember that k-i
 
 As with BMC< the default configuration of SBY may be enough for most of the cases, and modifications would be needed only if different parameters or complexity in designs changes.
 
+------------------
 Boolean Properties
 ------------------
 Most properties in the AXI SVA FVIP are described using Boolean operators, so all bit-level solvers are happy with them. We wanted to explore some things using the SMT solvers technology in TabbyCAD, but after some struggles with other users and tools, we decided to keep this as simple as possible.
 
+------------------------
 Data Tracking Invariants
 ------------------------
 Control properties are easy to describe in the AXI4 protocol, what is more tricky is to formalise the properties where data tracking is required, for example, atomic transactions and dependencies between channels. We will use the later as an example for this section.
@@ -236,11 +241,12 @@ The figure X shows how the scoreboard works. As soon as AW handshake occurs, the
     * There is an overflow check that is asserted when more write requests than pipeline packets exists. This can be disabled as well.
     * by looking at how many packets become active/inactive, we can see that we actually make progress during transaction verification, and that no check is vacuous.e
 
---------
-Examples
---------
+=======================
+Using the SVA AXI4 FVIP
+=======================
 The SVA AXI4 FVIP comes with some basic examples, we describe them in this section.
 
+--------------
 Synthesis Test
 --------------
 The most basic and fundamental way to test a formal verification IP is by the tautology method, that is, connecting the assertions to their versions as assumptions. If everything is configured correctly, all checks should pass within seconds. If there is some misconfiguration, or something that exists as a check but not as a constrain, or vice versa, the tool will show a CEX.
@@ -249,6 +255,7 @@ This test is much more useful when comparing between different implementations, 
 
 Whenever the user adds new properties or modifications, it is recommended to run this test before running the test directly to the DUT.
 
+------------------
 AMBA Validity Test
 ------------------
 This test uses the AMBA certified SVA IP (intended for simulation) as reference to check the validity and satisfiability of the YosysHQ AXI4 SVA FVIP. This test is just a bounded model between formal IP assumptions and formal IP assertions, using the AMBA SVA IP as a monitor agent. The results are interpreted as follows:
@@ -258,9 +265,10 @@ This test uses the AMBA certified SVA IP (intended for simulation) as reference 
 
 User can check the `Results.xlsx` sheet that contains the latest results from this test.
 
+-----------------------------
 SpinalHDL AXI4-Lite Component
 -----------------------------
-For this example, we use [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL) to write a very simple AXI4-Lite component. We are not interested in the datapath but in the control,  therefore the actual function that the scala source describes is not very important.
+For this example, we use [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL) to write a very simple AXI4-Lite component. We are not interested in the datapath but in the control,  therefore the actual function that the scala source describes is not relevant. Here is an excerpt of such component.
 
 .. code-block:: scala
 
@@ -279,7 +287,50 @@ For this example, we use [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL) to 
       io.o_result := AxiFunction.io.port_r
     }
 
-There are some protocol violations in this design. For example, 
+There are some protocol violations in this design. For example, the property *ap_AR_STABLE_ARPROT* is violated, as **ARPROT** can change its value when it has not been acknowledged (red shows the violation).
+
++----------------------------------------------------------------------+
+| .. image:: ../img/spinal_arprot.png                                  |
+|    :width: 6.5in                                                     |
+|    :height: 2.93in                                                   |
+|    :align: center                                                    |
++======================================================================+
+| Figure 3.1. A map to induction.                                      |
++----------------------------------------------------------------------+
+
+The SBY gui can be launched by executing the command *sby-gui* where the ***.sby** file reside, in this case in *AXI4/examples/spinal_axi4_lite/*.
+
+-------------
+AXI4 Crossbar
+-------------
+We also provide an example of how to use the FVIP to test different configurations for crossbars/interconnects. In more complex designs where different topologies are involved, or even where different types of bridges and adaptors are required, but testing the entire system become very complex, the FVIP can be used to replace the upstream/downstream components to focus on one task at a time. The Figure X shows a diagram of how the FVIP is connected to the crossbar.
+
++----------------------------------------------------------------------+
+| .. image:: ../img/arch_xbar.png                                      |
+|    :width: 6.5in                                                     |
+|    :height: 2.93in                                                   |
+|    :align: center                                                    |
++======================================================================+
+| Figure 3.1. A map to induction.                                      |
++----------------------------------------------------------------------+
+
+There is a document that covers the setup and some results of this example in *AXI4/examples/axi_crossbar/doc/crossbar_example.pdf*. One of the properties that failed is the *Read burst crossing 4K address boundary*. The AXI4 Formal IP found a violation in the crossbar around time step 19, **ARBURST = INCR**, **ARLEN = 1Ch**, **ARSIZE = 1h** and **ARADDR = 1EFE3h** giving a final address of **1F01Bh**, crossing the 4K boundary.
+
++----------------------------------------------------------------------+
+| .. image:: ../img/ar_bound_4k.jpg                                    |
+|    :width: 6.5in                                                     |
+|    :height: 2.93in                                                   |
+|    :align: center                                                    |
++======================================================================+
+| Figure 3.1. A map to induction.                                      |
++----------------------------------------------------------------------+
+
+.. note::
+    The failing property was obtained in the inductive test and may not be valid, but it has a purpose. One usually can find interesting scenarios by weakening the inductive property (not adding all required constrains but with some guidance), because SBY cannot generate certificates of witness yet, so this can help to investigate the design further. This is not a recommendation, and many times it does not serve a purpose without having previous knowledge of certain weak structures of the design.
+
+============================
+Completeness of the Protocol
+============================
 
 -------------------------------------------------------------
 Appendix A. Simple and Oversimplified K-Induction Explanation
